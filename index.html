@@ -32,16 +32,22 @@
   </div>
 
   <script>
+    const proxy = "https://api.allorigins.win/get?url=";
+
+    async function fetchJSON(url) {
+      const res = await fetch(proxy + encodeURIComponent(url));
+      const data = await res.json();
+      return JSON.parse(data.contents);
+    }
+
     async function fetchCoins() {
-      const url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=100&page=1&sparkline=false";
-      const res = await fetch(url);
-      return res.json();
+      const url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=20&page=1&sparkline=false";
+      return fetchJSON(url);
     }
 
     async function fetchVolumeHistory(coinId, days=2) {
       const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`;
-      const res = await fetch(url);
-      return res.json();
+      return fetchJSON(url);
     }
 
     function formatNumber(num) {
