@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crypto Volume Trends</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2>Crypto Volume Trends</h2>
+  <canvas id="volumeChart"></canvas>
+
+  <script>
+    async function fetchVolumeData(coinId = "bitcoin", days = 7) {
+      const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      return data.total_volumes; // [ [timestamp, volume], ... ]
+    }
+
+    async function renderChart() {
+      const volumes = await fetchVolumeData("bitcoin", 7);
+      const labels = volumes.map(v => new Date(v[0]).toLocaleDateString());
+      const values = volumes.map(v => v[1]);
+
+      const ctx = document.getElementById("volumeChart").getContext("2d");
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Volume (USD)",
+            data: values,
+            borderColor: "blue",
+            fill: false,
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: false }
+          }
+        }
+      });
+    }
+
+    renderChart();
+  </script>
+</body>
+</html>
